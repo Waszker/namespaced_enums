@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import inspect
 from enum import Enum, EnumMeta, _EnumDict
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, Union
 
-T = TypeVar("T", bound=list[Any] | dict[Any, Any] | set[Any])
+T = TypeVar("T", bound=Union[list[Any], dict[Any, Any], set[Any]])
 K = TypeVar("K", bound=dict[Any, Any])
 
 
