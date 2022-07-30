@@ -35,10 +35,10 @@ class NamespacedEnumMeta(EnumMeta):
     """Metaclass ensuring that all enum values are in `StrictEnumContainer`s."""
 
     def __new__(
-            mcs,
-            cls,
-            bases: tuple[type, ...],
-            namespace: _EnumDict,
+        mcs,
+        cls,
+        bases: tuple[type, ...],
+        namespace: _EnumDict,
     ):
         enum_values = [
             namespace[member]
@@ -48,8 +48,8 @@ class NamespacedEnumMeta(EnumMeta):
             field_name: field
             for field_name, field in namespace.items()
             if (
-                    inspect.ismethoddescriptor(field)
-                    and isinstance(field, StrictEnumContainer)
+                inspect.ismethoddescriptor(field)
+                and isinstance(field, StrictEnumContainer)
             )
         }
 
