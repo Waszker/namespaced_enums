@@ -10,7 +10,7 @@ setup(
     name="namespaced_enums",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    version="0.0.1a",
+    version="0.0.2",
     license="MIT",
     author="Piotr Waszkiewicz",
     author_email="waszka23@gmail.com",
