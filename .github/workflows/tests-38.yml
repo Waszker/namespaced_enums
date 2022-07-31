@@ -1,0 +1,24 @@
+name: Tests-3.8
+on: [pull_request]
+
+jobs:
+  tests-38:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+
+    container:
+      image: python:3.8
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install virtualenv and other prerequisites
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install wheel
+          pip install -r requirements.txt
+      - name: Run tests for Python 3.8
+        run: |
+          set -e
+          . venv/bin/activate
+          pytest .
