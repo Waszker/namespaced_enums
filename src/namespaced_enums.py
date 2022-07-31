@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import inspect
 from enum import Enum, EnumMeta, _EnumDict
-from typing import Any, Generic, TypeVar, Union
+from typing import Any, Dict, Generic, List, Set, TypeVar, Union
 
-T = TypeVar("T", bound=Union[list[Any], dict[Any, Any], set[Any]])
-K = TypeVar("K", bound=dict[Any, Any])
+T = TypeVar("T", bound=Union[List[Any], Dict[Any, Any], Set[Any]])
+K = TypeVar("K", bound=Dict[Any, Any])
 
 
 class EnumContainer(Generic[T]):
@@ -24,7 +24,7 @@ class StrictEnumContainer(EnumContainer[K]):
     def __init__(self, container: K):
         if not issubclass(type(container), dict):
             raise ValueError(
-                f"{StrictEnumContainer.__name__} supports only dict-based i"
+                f"{StrictEnumContainer.__name__} supports only dict-based "
                 + f"containers, {type(container)} provided",
             )
 
@@ -40,10 +40,10 @@ class NamespacedEnumMeta(EnumMeta):
         bases: tuple[type, ...],
         namespace: _EnumDict,
     ):
-        enum_values = [
-            namespace[member]
+        enum_values = {
+            namespace[member]: member
             for member in namespace._member_names  # type: ignore
-        ]
+        }
         strict_enum_container_fields = {
             field_name: field
             for field_name, field in namespace.items()
@@ -71,7 +71,7 @@ class NamespacedEnumMeta(EnumMeta):
         # Change the StrictEnumContainer key values to proper enum objects
         for container in strict_enum_container_fields.values():
             new_container_content = {
-                getattr(instantiated_enum, enum_value): dict_value
+                getattr(instantiated_enum, enum_values[enum_value]): dict_value
                 for enum_value, dict_value in container._container.items()
             }
             container._container.clear()
