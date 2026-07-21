@@ -10,6 +10,9 @@ Run
 $ pip install namespaced_enums
 ```
 
+Using [mypy](https://mypy.readthedocs.io/)? See [mypy support](#mypy-support) to
+enable the bundled plugin.
+
 ## Usage
 
 Library provides two special descriptors for `Enum` classes:
@@ -107,6 +110,72 @@ class Food(NamespacedEnum):
 
 >>> # Trying to start the program raises a `RuntimeError`:
 # The following Food fields do not contain all possible enum values: ['reactions']
+```
+
+## mypy support
+
+The library ships with a [mypy](https://mypy.readthedocs.io/) plugin (and a
+`py.typed` marker). Without it, mypy sees container attributes as enum members
+and rejects indexing them (`"Enum" is not indexable`).
+
+### Enabling the plugin
+
+mypy does **not** load plugins automatically, so enabling support is two steps:
+
+**1. Install the optional dependency** (requires `mypy >= 1.0`):
+
+```bash
+$ pip install namespaced_enums[mypy]
+```
+
+**2. Register the plugin in your mypy configuration.** Add the following to
+whichever config file your project uses:
+
+`mypy.ini` (or the `[mypy]` section of `setup.cfg`):
+
+```ini
+[mypy]
+plugins = namespaced_enums.plugin
+```
+
+`pyproject.toml`:
+
+```toml
+[tool.mypy]
+plugins = ["namespaced_enums.plugin"]
+```
+
+That's it — no import changes are needed in your own code.
+
+### What you get
+
+With the plugin enabled, containers are typed correctly instead of being seen as
+enum members:
+
+```python
+class DogBreed(NamespacedEnum):
+    BULLDOG = 'bulldog'
+    PUG = 'pug'
+    SHIBA = 'shiba'
+
+    size = StrictEnumContainer({BULLDOG: 40, PUG: 30, SHIBA: 35})
+
+reveal_type(DogBreed.size)          # dict[DogBreed, int]
+n: int = DogBreed.size[DogBreed.PUG]  # ok, no "not indexable" error
+```
+
+More importantly, the plugin turns the runtime `RuntimeError` for an incomplete
+`StrictEnumContainer` into a **static** error (error code `namespaced-enum`),
+so a forgotten member is caught by mypy instead of at import time:
+
+```python
+class DogBreed(NamespacedEnum):
+    BULLDOG = 'bulldog'
+    PUG = 'pug'
+    SHIBA = 'shiba'
+
+    size = StrictEnumContainer({BULLDOG: 40, PUG: 30})
+    # error: StrictEnumContainer "size" is missing keys for enum members: SHIBA  [namespaced-enum]
 ```
 
 ## Rationale

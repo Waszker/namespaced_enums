@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: python:3.10
+      image: python:3.12
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install virtualenv and other prerequisites
         run: |
           python3 -m venv venv
@@ -21,4 +21,4 @@ jobs:
         run: |
           set -e
           . venv/bin/activate
-          black --check --line-length=80 src/namespaced_enums.py tests/test_namespaced_enums.py 
+          black --check --line-length=80 src/namespaced_enums tests
