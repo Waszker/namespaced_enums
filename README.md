@@ -10,6 +10,9 @@ Run
 $ pip install namespaced_enums
 ```
 
+Using [mypy](https://mypy.readthedocs.io/)? See [mypy support](#mypy-support) to
+enable the bundled plugin.
+
 ## Usage
 
 Library provides two special descriptors for `Enum` classes:
@@ -112,22 +115,39 @@ class Food(NamespacedEnum):
 ## mypy support
 
 The library ships with a [mypy](https://mypy.readthedocs.io/) plugin (and a
-`py.typed` marker). Enable it in your `mypy.ini` / `setup.cfg`:
+`py.typed` marker). Without it, mypy sees container attributes as enum members
+and rejects indexing them (`"Enum" is not indexable`).
+
+### Enabling the plugin
+
+mypy does **not** load plugins automatically, so enabling support is two steps:
+
+**1. Install the optional dependency** (requires `mypy >= 1.0`):
+
+```bash
+$ pip install namespaced_enums[mypy]
+```
+
+**2. Register the plugin in your mypy configuration.** Add the following to
+whichever config file your project uses:
+
+`mypy.ini` (or the `[mypy]` section of `setup.cfg`):
 
 ```ini
 [mypy]
 plugins = namespaced_enums.plugin
 ```
 
-or in `pyproject.toml`:
+`pyproject.toml`:
 
 ```toml
 [tool.mypy]
 plugins = ["namespaced_enums.plugin"]
 ```
 
-Install the optional dependency with `pip install namespaced_enums[mypy]`
-(requires `mypy >= 1.0`).
+That's it — no import changes are needed in your own code.
+
+### What you get
 
 With the plugin enabled, containers are typed correctly instead of being seen as
 enum members:
