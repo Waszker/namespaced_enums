@@ -109,6 +109,55 @@ class Food(NamespacedEnum):
 # The following Food fields do not contain all possible enum values: ['reactions']
 ```
 
+## mypy support
+
+The library ships with a [mypy](https://mypy.readthedocs.io/) plugin (and a
+`py.typed` marker). Enable it in your `mypy.ini` / `setup.cfg`:
+
+```ini
+[mypy]
+plugins = namespaced_enums.plugin
+```
+
+or in `pyproject.toml`:
+
+```toml
+[tool.mypy]
+plugins = ["namespaced_enums.plugin"]
+```
+
+Install the optional dependency with `pip install namespaced_enums[mypy]`
+(requires `mypy >= 1.0`).
+
+With the plugin enabled, containers are typed correctly instead of being seen as
+enum members:
+
+```python
+class DogBreed(NamespacedEnum):
+    BULLDOG = 'bulldog'
+    PUG = 'pug'
+    SHIBA = 'shiba'
+
+    size = StrictEnumContainer({BULLDOG: 40, PUG: 30, SHIBA: 35})
+
+reveal_type(DogBreed.size)          # dict[DogBreed, int]
+n: int = DogBreed.size[DogBreed.PUG]  # ok, no "not indexable" error
+```
+
+More importantly, the plugin turns the runtime `RuntimeError` for an incomplete
+`StrictEnumContainer` into a **static** error (error code `namespaced-enum`),
+so a forgotten member is caught by mypy instead of at import time:
+
+```python
+class DogBreed(NamespacedEnum):
+    BULLDOG = 'bulldog'
+    PUG = 'pug'
+    SHIBA = 'shiba'
+
+    size = StrictEnumContainer({BULLDOG: 40, PUG: 30})
+    # error: StrictEnumContainer "size" is missing keys for enum members: SHIBA  [namespaced-enum]
+```
+
 ## Rationale
 
 It's a common practice to use enums in a project as a way to denote 

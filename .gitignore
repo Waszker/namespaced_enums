@@ -1,0 +1,25 @@
+# Byte-compiled / caches
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+
+# Packaging / build artifacts
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.env/
+.env37/
+venv/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Local scratch files from plugin experiments
+/main.py
+/plugin.py
+/extensions.py
